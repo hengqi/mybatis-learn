@@ -27,7 +27,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 							<tr>
 								<td width="90" align="right">指令名称：</td>
 								<td>
-									<input name="command" type="text" class="allInput" value="${command}"/>
+									<input name="commandName" type="text" class="allInput" value="${commandName}"/>
 								</td>
 								<td width="90" align="right">描述：</td>
 								<td>
@@ -51,7 +51,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 									<tr  <c:if test="${status.index % 2 != 0}">style='background-color:#ECF6EE;'</c:if>>
 										<td><input type="checkbox"  name="id" value="${message.id}"/></td>
 										<td>${status.index + 1}</td>
-										<td>${message.command}</td>
+										<td>${message.commandName}</td>
 										<td>${message.description}</td>
 										<td>
 											<a href="#">修改</a>&nbsp;&nbsp;&nbsp;
