@@ -17,6 +17,7 @@
         from micro_command as a left join micro_command_content as b
         on a.id = b.command_id
         <where>
+            a.is_deleted ='0' and b.is_deleted = '0'
             <if test="commandName != null and !&quot;&quot;.equals(commandName.trim())">
                 and command_name=#{commandName}
             </if>
@@ -25,5 +26,12 @@
             </if>
         </where>
     </select>
+
+    <insert id="save" parameterType="com.chenhl.mybatis.domain.Command" useGeneratedKeys="true" keyProperty="id">
+        INSERT micro_command (command_name, description)
+        VALUE (#{commandName}, #{description})
+    </insert>
+
+
 
 </mapper>

@@ -17,10 +17,16 @@ public class QueryService {
     private static final Logger logger = LoggerFactory.getLogger(QueryService.class);
 
 
-    public List<Message> queryMessageList(String command, String description) {
+//    public List<Message> queryMessageList(String command, String description) {
+//        logger.info("查询列表开始：command:{}, description:{}", command, description);
+//        MessageDao messageDao = new MessageDao();
+//        return messageDao.queryMessageList(command, description);
+//    }
+
+    public List<Command> queryCommandList(String command, String description) {
         logger.info("查询列表开始：command:{}, description:{}", command, description);
-        MessageDao messageDao = new MessageDao();
-        return messageDao.queryMessageList(command, description);
+        CommandDao commandDao = new CommandDao();
+        return commandDao.queryCommandList(command, description);
     }
 
     /**

@@ -19,6 +19,8 @@ public class Command {
      */
     private List<CommandContent> contentList;
 
+    private String isDeleted;
+
     public Integer getId() {
         return id;
     }
@@ -49,6 +51,14 @@ public class Command {
 
     public void setContentList(List<CommandContent> contentList) {
         this.contentList = contentList;
+    }
+
+    public String getIsDeleted() {
+        return isDeleted;
+    }
+
+    public void setIsDeleted(String isDeleted) {
+        this.isDeleted = isDeleted;
     }
 }
 

@@ -14,6 +14,8 @@ public class CommandContent {
      */
     private Integer commandId;
 
+    private String isDeleted;
+
 
     public Integer getId() {
         return id;
@@ -37,5 +39,13 @@ public class CommandContent {
 
     public void setCommandId(Integer commandId) {
         this.commandId = commandId;
+    }
+
+    public String getIsDeleted() {
+        return isDeleted;
+    }
+
+    public void setIsDeleted(String isDeleted) {
+        this.isDeleted = isDeleted;
     }
 }
