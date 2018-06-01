@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link href="../css/bootstrap.min.css" rel="stylesheet"/>
+    <title>新增页</title>
+    <style>
+        .container table tr td {
+            vertical-align: middle;
+            text-align: center;
+        }
+    </style>
+</head>
+<body class="container">
+<h1 align="center">修改页</h1>
+<form class="form-horizontal" id="editForm" action="/edit.action">
+    <div class="form-group">
+        <label class="col-sm-2 control-label">指令名称</label>
+        <div class="col-sm-4">
+            <input type="text" class="form-control" id="commandName">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-2 control-label">描述</label>
+        <div class="col-sm-4">
+            <input type="text" class="form-control" id="description">
+        </div>
+    </div>
+
+
+    <table class="table table-condensed table-striped">
+        <tr>
+            <th>序号</th>
+            <th>内容</th>
+            <th>操作</th>
+        </tr>
+        <tr>
+            <td>1</td>
+            <td>
+                <textarea class="form-control" name="content"></textarea>
+            </td>
+            <td><a class="btn btn-danger btn-sm delete-btn">delete</a></td>
+        </tr>
+
+        <tr id="add-tr">
+            <td></td>
+            <td></td>
+            <td><a id="add" class="btn btn-primary btn-sm">add</a></td>
+        </tr>
+    </table>
+
+    <button type="button" class="btn btn-primary" id="btn1">修改</button>
+</form>
+<script src="../js/common/jquery-1.8.0.min.js"></script>
+<script>
+    var commandId;
+    var contentId;
+    var $table = $('.table');
+    var $addBtn = $('#add');
+    var $addTr = $('#add-tr');
+    var $template = $('<tr> ' +
+        '<td class="index">1</td> ' +
+        '<td> <textarea class="form-control" name="content"></textarea> </td> ' +
+        '<td><button class="btn btn-danger btn-sm delete-btn">delete</button></td> ' +
+        '</tr>')
+    $addBtn.on('click', function (e) {
+        stop(e);
+        var $newTr = $template.clone();
+        $addTr.before($newTr);
+        sortIndex();
+    });
+
+    $table.on('click', '.delete-btn', function (e) {
+        stop(e);
+        var $btn = $(e.target);
+        var $tr = $btn.parents('tr')
+        $tr.remove();
+        sortIndex();
+    })
+
+    function stop(e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+
+    function sortIndex() {
+        $('tr').each(function (index, ele) {
+            if (index === 0) return;
+            $(ele).find('.index').html(index);
+        })
+    }
+
+    var targetUrl = $("#editForm").attr("action");
+    $("#btn1").click(function () {
+        $.ajax({
+            type: 'POST',
+            url: targetUrl,
+            traditional: true,
+            datatype: "json",
+            data: {
+                'id': commandId,
+                'contentId': contentId,
+                'commandName': $("#commandName").val(),
+                'description': $("#description").val(),
+                'content': $("[name='content']").val()
+            },
+            success: function (returndata) {
+                if (returndata.isSuccess) {
+                    window.location.href = 'http://localhost:8080/resources/html/list.html';
+                }
+            }
+        });
+
+    });
+
+    function GetRequest() {
+        var url = location.search; //获取url中"?"符后的字串
+        var theRequest = new Object();
+        if (url.indexOf("?") != -1) {
+            var str = url.substr(1);
+            strs = str.split("&");
+            for (var i = 0; i < strs.length; i++) {
+                theRequest[strs[i].split("=")[0]] = unescape(strs[i].split("=")[1]);
+            }
+        }
+        return theRequest;
+    }
+
+    $(function () {
+        var param = GetRequest();
+        contentId = param.contentid;
+        $.ajax({
+            type: 'POST',
+            url: '/editUI.action',
+            datatype: "json",
+            data: {
+                'contentid': contentId
+            },
+            success: function (returndata) {
+                console.log(returndata);
+                if (returndata.isSuccess) {
+                    var retValue = returndata.retValue;
+                    var commandName = retValue.commandName;
+                    var description = retValue.description;
+                    commandId = retValue.id;
+                    var content = retValue.contentList[0].content;
+                    $("#commandName").val(commandName);
+                    $("#description").val(description);
+                    $("[name='content']").val(content);
+                }
+            }
+        });
+    })
+</script>
+</body>
+</html>

@@ -32,6 +32,23 @@
         VALUE (#{commandName}, #{description})
     </insert>
 
+    <select id="selectCommandByContentId" parameterType="int" resultMap="CommandResult">
+        select a.id C_ID, a.command_name,a.description,b.id,b.content, b.command_id
+        from micro_command as a left join micro_command_content as b
+        on a.id = b.command_id
+        WHERE a.is_deleted='0' AND b.is_deleted='0' AND b.id = #{_parameter}
+    </select>
 
-
+    <update id="update" parameterType="com.chenhl.mybatis.domain.Command">
+        UPDATE micro_command
+        <set>
+            <if test="commandName != null and !&quot;&quot;.equals(commandName.trim())">
+                command_name=#{commandName},
+            </if>
+            <if test="description != null and !&quot;&quot;.equals(description.trim())">
+                description = #{description}
+            </if>
+        </set>
+        WHERE id = #{id}
+    </update>
 </mapper>

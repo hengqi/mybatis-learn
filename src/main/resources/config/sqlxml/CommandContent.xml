@@ -37,8 +37,18 @@
         <foreach collection="list" item="item" separator=",">
             (#{item.content}, #{item.commandId})
         </foreach>
-
     </insert>
 
-
+    <update id="update" parameterType="com.chenhl.mybatis.domain.CommandContent">
+        UPDATE micro_command_content
+        <set>
+            <if test="content != null and !&quot;&quot;.equals(content.trim())">
+                content=#{content},
+            </if>
+            <if test="commandId != null">
+                command_id = #{commandId}
+            </if>
+        </set>
+        WHERE id = #{id}
+    </update>
 </mapper>

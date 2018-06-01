@@ -47,4 +47,19 @@ public class MaintainService {
         CommandDao commandDao = new CommandDao();
         commandDao.save(command, contents);
     }
+
+    public Command selectCommandByContentId(Integer contentid) {
+        CommandDao commandDao = new CommandDao();
+        Command command = commandDao.selectCommandByContentId(contentid);
+        return command;
+    }
+
+    public void update(String id, String commandName, String description, String content, String contentId) {
+        CommandDao commandDao = new CommandDao();
+        Command command = new Command();
+        command.setId(Integer.valueOf(id));
+        command.setCommandName(commandName);
+        command.setDescription(description);
+        commandDao.update(command, content, contentId);
+    }
 }
