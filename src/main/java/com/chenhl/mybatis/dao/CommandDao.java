@@ -63,4 +63,44 @@ public class CommandDao {
         return commandList;
     }
 
+    public Command selectCommandByContentId(Integer contentid) {
+        DBAccess dbAccess = new DBAccess();
+        // mybatis查询不到结果也不会返回null,而是返回一个空的集合ArrayList
+        SqlSession sqlSession = null;
+        Command command = null;
+        try {
+            sqlSession = dbAccess.getSqlSession();
+            command = sqlSession.selectOne("Command.selectCommandByContentId", contentid);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (sqlSession != null) {
+                sqlSession.close();
+            }
+        }
+        return command;
+    }
+
+    public void update(Command command, String content, String contentId) {
+        DBAccess dbAccess = new DBAccess();
+        // mybatis查询不到结果也不会返回null,而是返回一个空的集合ArrayList
+        SqlSession sqlSession = null;
+        try {
+            sqlSession = dbAccess.getSqlSession();
+            sqlSession.update("Command.update", command);
+            CommandContent commandContent = new CommandContent();
+            commandContent.setId(Integer.valueOf(contentId));
+            commandContent.setContent(content);
+            commandContent.setCommandId(command.getId());
+            sqlSession.update("CommandContent.update", commandContent);
+            sqlSession.commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+            sqlSession.rollback();
+        } finally {
+            if (sqlSession != null) {
+                sqlSession.close();
+            }
+        }
+    }
 }

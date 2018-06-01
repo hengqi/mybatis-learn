@@ -17,7 +17,6 @@ import java.util.stream.Stream;
 
 public class EditServlet extends HttpServlet {
 
-
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         ResultModel resultModel;
@@ -29,7 +28,6 @@ public class EditServlet extends HttpServlet {
             String id = req.getParameter("id");
             String commandName = req.getParameter("commandName");
             String description = req.getParameter("description");
-            String[] contents = req.getParameterValues("contents");
             if (null == commandName || "".equals(commandName.trim())) {
                 resultModel = new ResultModel(false, "指令名称不能为空");
                 out.write(JSON.toJSONString(resultModel));
@@ -40,19 +38,36 @@ public class EditServlet extends HttpServlet {
                 out.write(JSON.toJSONString(resultModel));
                 out.flush();
             }
-            if (null == contents || 0 == contents.length) {
-                resultModel = new ResultModel(false, "内容不能为空");
-                out.write(JSON.toJSONString(resultModel));
-                out.flush();
-            }
+
             // 新增
             if (null == id || "".equals(id)) {
+                String[] contents = req.getParameterValues("contents");
+                if (null == contents || 0 == contents.length) {
+                    resultModel = new ResultModel(false, "内容不能为空");
+                    out.write(JSON.toJSONString(resultModel));
+                    out.flush();
+                }
                 MaintainService maintainService = new MaintainService();
                 maintainService.save(commandName, description, contents);
                 resultModel = ResultModel.Success;
             }
             // 修改
             else {
+                String content = req.getParameter("content");
+                if (null == content || "".equals(content)) {
+                    resultModel = new ResultModel(false, "内容不能为空");
+                    out.write(JSON.toJSONString(resultModel));
+                    out.flush();
+                }
+
+                String contentId = req.getParameter("contentId");
+                if (null == contentId || "".equals(contentId)) {
+                    resultModel = new ResultModel(false, "内容Id不能为空");
+                    out.write(JSON.toJSONString(resultModel));
+                    out.flush();
+                }
+                MaintainService maintainService = new MaintainService();
+                maintainService.update(id, commandName, description, content, contentId);
                 resultModel = ResultModel.Success;
             }
 

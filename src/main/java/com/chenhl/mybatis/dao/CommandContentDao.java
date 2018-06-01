@@ -1,6 +1,7 @@
 package com.chenhl.mybatis.dao;
 
 import com.chenhl.mybatis.db.DBAccess;
+import com.chenhl.mybatis.domain.Command;
 import com.chenhl.mybatis.domain.CommandContent;
 import org.apache.ibatis.session.SqlSession;
 
@@ -12,7 +13,7 @@ public class CommandContentDao {
     public int deleteOne(Integer id) {
         DBAccess dbAccess = new DBAccess();
         SqlSession sqlSession = null;
-        int v=0;
+        int v = 0;
         try {
             sqlSession = dbAccess.getSqlSession();
             v = sqlSession.update("CommandContent.deleteOne", id);
@@ -30,7 +31,7 @@ public class CommandContentDao {
     public int deleteBatch(List<Integer> ids) {
         DBAccess dbAccess = new DBAccess();
         SqlSession sqlSession = null;
-        int v=0;
+        int v = 0;
         try {
             sqlSession = dbAccess.getSqlSession();
             v = sqlSession.update("CommandContent.deleteBatch", ids);
@@ -60,4 +61,5 @@ public class CommandContentDao {
             }
         }
     }
+
 }
