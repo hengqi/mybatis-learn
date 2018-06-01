@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>内容列表页面</title>
+    <link href="../css/all.css" rel="stylesheet" type="text/css"/>
+    <script src="../js/common/jquery-1.8.0.min.js"></script>
+
+    <style>
+        .abc {
+            background-color: #ECF6EE;
+        }
+    </style>
+</head>
+<body style="background: #e1e9eb;">
+<form action="" id="mainForm" method="post">
+    <div class="right">
+        <div class="current">当前位置：<a href="javascript:void(0)" style="color:#6E6E6E;">内容管理</a> &gt; 内容列表</div>
+        <div class="rightCont">
+            <p class="g_title fix">内容列表 <a class="btn03" href="add.html">新 增</a>&nbsp;&nbsp;&nbsp;&nbsp;<a class="btn11"
+                                                                                                    id="but_delet_choice">删
+                除</a></p>
+            <table class="tab1">
+                <tbody>
+                <tr>
+                    <td width="90" align="right">指令名称：</td>
+                    <td>
+                        <input type="text" class="allInput" value="" id="cn"/>
+                    </td>
+                    <td width="90" align="right">描述：</td>
+                    <td>
+                        <input type="text" class="allInput" value="" id="descr"/>
+                    </td>
+                    <td width="85" align="right"><input type="button" class="tabSub" value="查 询" id="search"/></td>
+                </tr>
+                </tbody>
+            </table>
+            <div class="zixun fix">
+                <table class="tab2" width="100%">
+                    <tbody>
+                    <tr id="aa">
+                        <th><input type="checkbox" id="check_all_box"/></th>
+                        <th>序号</th>
+                        <th>指令名称</th>
+                        <th>描述</th>
+                        <th>内容</th>
+                        <th>操作</th>
+                    </tr>
+                    </tbody>
+                </table>
+                <div class='page fix'>
+                    共 <b>4</b> 条
+                    <a href='###' class='first'>首页</a>
+                    <a href='###' class='pre'>上一页</a>
+                    当前第<span>1/1</span>页
+                    <a href='###' class='next'>下一页</a>
+                    <a href='###' class='last'>末页</a>
+                    跳至&nbsp;<input type='text' value='1' class='allInput w28'/>&nbsp;页&nbsp;
+                    <a href='###' class='go'>GO</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<script>
+    $(function () {
+            // 加载数据
+            loadlistdata();
+
+            //全选与反选
+            $("#check_all_box").click(function () {
+                if (this.checked) {
+                    $("input[name='items']:checkbox").each(function () {
+                        $(this).attr("checked", true);
+                    });
+                } else {
+                    $("input[name='items']:checkbox").each(function () {
+                        $(this).attr("checked", false);
+                    });
+                }
+
+            });
+        }
+    );
+
+    function loadlistdata() {
+        $.ajax({
+            type: 'POST',
+            url: "/list.action",
+            datatype: "json",
+            data: {
+                'commandName': $('#cn').val(),
+                'description': $('#descr').val()
+            },
+            success: function (retdata) {
+                renderTable(retdata);
+            }
+        });
+    }
+
+    function renderTable(retdata) {
+        if (retdata.isSuccess) {
+            var retVal = retdata.retValue;
+            var seqnum = 1;
+            for (var i = 0; i < retVal.length; i++) {
+                var command = retVal[i];
+                var commandName = command.commandName;
+                var description = command.description;
+                var commandContents = command.contentList;
+                for (var j = 0; j < commandContents.length; j++) {
+                    var commandContent = commandContents[j];
+                    var contentid = commandContent.id;
+                    var content = commandContent.content;
+
+                    var temp = $('<tr>' +
+                        '<td><input type="checkbox" name="items" id=""/></td>' +
+                        '<td>' + seqnum + '</td>' +
+                        '<td>' + commandName + '</td>' +
+                        '<td>' + description + '</td>' +
+                        '<td>' + content + '</td>' +
+                        '<td><a href="#">修改</a>&nbsp;&nbsp;&nbsp;<a href="#" onclick="deleteOne(' + contentid + ');">删除</a></td>' +
+                        '</tr>'
+                    );
+                    temp.attr("id", contentid);
+                    $('tbody tr:last').after(temp);
+                    seqnum++;
+                }
+            }
+            $('input:checkbox').click(function () {
+                console.log('im')
+                var array = []
+                $("input[name='items']:checkbox").each(function () {
+                    if (this.checked == false) {
+                        $("#check_all_box").attr('checked', false);
+                    }
+
+                    array.push(this.checked)
+                    console.log(array.indexOf(false))
+
+                });
+                if (array.indexOf(false) == -1) {
+                    $("#check_all_box").attr('checked', true);
+                }
+            });
+            $("tbody tr:odd").addClass("abc");
+            $("tbody tr:even").addClass("");
+        }
+    }
+
+
+    $('#search').click(function () {
+        $('#aa').nextAll().remove();
+        loadlistdata();
+    });
+
+    function deleteOne(id) {
+        if (confirm('您确定要删除吗？')) {
+            $.ajax({
+                type: 'POST',
+                url: "/deleteOne.action",
+                datatype: "json",
+                data: {'id': id},
+                success: function (retdata) {
+                    if (retdata.isSuccess) {
+                        $('#aa').nextAll().remove();
+                        loadlistdata();
+                    }
+                }
+            });
+        }
+    }
+
+
+    $('#but_delet_choice').click(function () {
+        var $check_boxes = $('input[type=checkbox][checked=checked][id!=check_all_box]');
+        if ($check_boxes.length <= 0) {
+            alert('您未勾选，请勾选！');
+            return;
+        }
+
+        if (confirm('您确定要删除吗？')) {
+            var ids = [];
+            $check_boxes.each(function () {
+                ids.push($(this).parent().parent().attr("id"));
+            });
+            $.ajax({
+                type: 'post',
+                traditional: true,
+                datatype: "json",
+                url: '/deleteBatch.action',
+                data: {'ids': ids},
+                success: function (data) {
+                    $('#aa').nextAll().remove();
+                    loadlistdata();
+                }
+            });
+        }
+        return false;
+    });
+
+</script>
+
+
+</body>
+</html>

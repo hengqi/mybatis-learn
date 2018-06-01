@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Command">
+
+    <resultMap type="com.chenhl.mybatis.domain.Command" id="CommandResult">
+        <id column="C_ID" jdbcType="INTEGER" property="id"/>
+        <result column="command_name" jdbcType="VARCHAR" property="commandName"/>
+        <result column="description" jdbcType="VARCHAR" property="description"/>
+        <collection property="contentList" resultMap="CommandContent.CommandContentResult"/>
+    </resultMap>
+
+    <select id="queryCommandList" parameterType="com.chenhl.mybatis.domain.Command" resultMap="CommandResult">
+        select a.id C_ID, a.command_name,a.description,b.id,b.content, b.command_id
+        from micro_command as a left join micro_command_content as b
+        on a.id = b.command_id
+        <where>
+            a.is_deleted ='0' and b.is_deleted = '0'
+            <if test="commandName != null and !&quot;&quot;.equals(commandName.trim())">
+                and command_name=#{commandName}
+            </if>
+            <if test="description != null and !&quot;&quot;.equals(description.trim())">
+                and description like '%' #{description} '%'
+            </if>
+        </where>
+    </select>
+
+    <insert id="save" parameterType="com.chenhl.mybatis.domain.Command" useGeneratedKeys="true" keyProperty="id">
+        INSERT micro_command (command_name, description)
+        VALUE (#{commandName}, #{description})
+    </insert>
+
+
+
+</mapper>
